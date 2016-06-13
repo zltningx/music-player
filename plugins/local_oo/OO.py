@@ -111,16 +111,18 @@ class OO(QObject):
         else:
             self._app.message("你还未登录，不能收藏哟！", error=True)
 
-    def load_local(self, song_object):
+    def load_songs(self, song_object=None):
         # Notice!
         # song table has set_songs
         # playlist dialog has set_songs
         load = MysqlMusic()
+        if song_object is None:
+            song_object = SongsTable()
         song_object.set_songs(load.get_all_music_from_sql())  # MysqlMusic ClassMethod
 
     def show_database_songs(self):
         db_songs_table = MusicDatabaseTable(self._app)
-        self.load_local(db_songs_table)  # load song to music database table
+        self.load_songs(db_songs_table)  # load song to music database table
 
         db_songs_table.play_song_signal.connect(self.play_song)
         db_songs_table.buy_song_signal.connect(self.add_song_to_buy)
@@ -186,3 +188,6 @@ class OO(QObject):
     def play_all(self, songs):
         if songs is not None:
             self._app.player.set_music_list(songs)
+
+    def net_searcher(self):
+        text = self.ui.songs_table_container.table_control.search_box.text()
